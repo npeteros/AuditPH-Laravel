@@ -1,6 +1,6 @@
 # Audit Web Application Readme
 
-![Audit Web Application](app_screenshot.png)
+![Audit Web Application](audit.png)
 
 Welcome to **Audit**, a powerful web application built using Laravel Inertia, ReactJS, and Tailwind CSS. Audit is designed to help you effectively manage your budgets, goals, and transactions. This readme will guide you through the installation process, features, and usage of the application.
 
