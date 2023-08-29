@@ -4,7 +4,7 @@ import { Head, usePage } from '@inertiajs/react';
 
 export default function Dashboard({ auth }) {
 
-    const { budgetCount, goalCount, transactionCount, id } = usePage().props;
+    const { budgetCount, goalCount, transactionCount, expenses } = usePage().props;
 
     return (
         <AuthenticatedLayout
@@ -30,7 +30,7 @@ export default function Dashboard({ auth }) {
                                     <path d="m16 12-4-4"></path>
                                 </svg>
                                 <span className='ml-6 text-justify'>
-                                    <span>Income {id}</span><br />
+                                    <span>Income</span><br />
                                     <span className='text-xl font-bold'>$&nbsp;20,850</span>
                                 </span>
                             </div>
@@ -51,7 +51,7 @@ export default function Dashboard({ auth }) {
                                 </div>
                                 <span className='ml-6 text-justify'>
                                     <span>Expenses</span><br />
-                                    <span className='text-xl font-bold'>$&nbsp;12,850</span>
+                                    <span className='text-xl font-bold'>$&nbsp;{expenses.toLocaleString()}</span>
                                 </span>
                             </div>
                         </DivLink>

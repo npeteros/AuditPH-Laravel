@@ -13,7 +13,8 @@ class Transaction extends Model
     protected $fillable = [
         'budget_type_id',
         'name',
-        'amount'
+        'amount',
+        'goal_id'
     ];
 
     public function user(): BelongsTo

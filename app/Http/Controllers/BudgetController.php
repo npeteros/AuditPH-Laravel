@@ -45,8 +45,10 @@ class BudgetController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $user = auth()->user();
+        
         $validated = $request->validate([
-            'budget_type_id' => 'required',
+            'budget_type_id' => 'required|unique:budgets,budget_type_id,NULL,id,user_id,' . $user->id,
             'budget_total' => 'required|numeric|min:0.01',
         ]);
 

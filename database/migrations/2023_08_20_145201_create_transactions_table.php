@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('budget_type_id')->constrained('budget_types')->cascadeOnDelete();
+            $table->foreignId('goal_id')->nullable()->constrained('goals')->cascadeOnDelete();
             $table->string('name', 60);
             $table->integer('amount', false, true);
             $table->timestamps();

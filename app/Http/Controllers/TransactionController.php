@@ -10,6 +10,10 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
+use App\Models\Budget;
+use App\Models\User;
+use App\Models\Goal;
+
 class TransactionController extends Controller
 {
     /**
@@ -35,7 +39,20 @@ class TransactionController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Transaction/Create');
+        $user = auth()->user();
+        $goals = DB::table('goals')
+            ->select('id', 'goal')
+            ->where('goals.user_id', $user->id)
+            ->get();
+        
+        $budgets = DB::table('budget_types')
+            ->select('id', 'name')
+            ->get();
+
+        return Inertia::render('Transaction/Create', [
+            'goals' => $goals,
+            'budgets' => $budgets,
+        ]);
     }
 
     /**
@@ -45,11 +62,46 @@ class TransactionController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:60',
-            'budget_type_id' => 'required',
+            'budget_type_id' => 'required|not_in:0',
+            'goal_id' => 'required',
             'amount' => 'required|numeric|min:0.01',
         ]);
 
+        // Increase goal's progress
+        if($validated['goal_id'] > 0) {
+            $goal = Goal::find($validated['goal_id']);
+            if(($goal->current + $validated['amount']) >= $goal->target) $goal->current = $goal->target;
+            else $goal->current += $validated['amount'];
+            $goal->save();
+        } else $validated['goal_id'] = null;
+
+        // Create transaction
         $request->user()->transaction()->create($validated);
+        
+        // Increase budget's progress
+        $budget = Budget::whereIn('user_id', function($query) {
+            $query->select('user_id')
+                ->from('transactions')
+                ->whereColumn('budgets.user_id', 'transactions.user_id')
+                ->whereColumn('budgets.budget_type_id', 'transactions.budget_type_id');
+        })
+        ->whereIn('budget_type_id', function($query) {
+            $query->select('budget_type_id')
+                ->from('transactions')
+                ->whereColumn('budgets.user_id', 'transactions.user_id')
+                ->whereColumn('budgets.budget_type_id', 'transactions.budget_type_id');
+        })->first();
+        if($budget) {
+            if(($budget->budget_current + $validated['amount']) >= $budget->budget_total) $budget->budget_current = $budget->budget_total;
+            else $budget->budget_current += $validated['amount'];
+            $budget->save();
+        }
+
+        // Increase user's expenses
+        $user = auth()->user();
+        $user = User::find($user->id);
+        $user->expenses += $validated['amount'];
+        $user->save();
 
         return redirect(route('transactions.index'));
     }

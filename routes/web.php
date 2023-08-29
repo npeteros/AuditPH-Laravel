@@ -37,6 +37,7 @@ Route::get('/dashboard', function () {
         'budgetCount' => Budget::where('user_id', $user->id)->count(),
         'goalCount' => Goal::where('user_id', $user->id)->count(),
         'transactionCount' => Transaction::where('user_id', $user->id)->count(),
+        'expenses' => User::find($user->id)->expenses,
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
