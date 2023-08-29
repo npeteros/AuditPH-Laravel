@@ -6,8 +6,8 @@ import React from "react";
 
 const Create = ({ auth }) => {
     const { data, setData, post, processing, reset, errors } = useForm({
-        budget_type_id: '',
-        budget_total: 0,
+        goal: '',
+        target: 0,
     });
 
     const submit = (e) => {

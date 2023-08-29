@@ -43,7 +43,7 @@ class GoalController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'goal' => 'required|max:60',
+            'goal' => 'required|string|max:60',
             'target' => 'required|numeric|min:0.01',
         ]);
 
@@ -55,25 +55,43 @@ class GoalController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Goal $goal)
+    public function show(Goal $goal): Response
     {
-        //
+        $this->authorize('view', $goal);
+
+        return Inertia::render('Goal/Show', [
+            'goal' => $goal,
+        ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Goal $goal)
+    public function edit(Goal $goal): Response
     {
-        //
+        $this->authorize('view', $goal);
+        
+        return Inertia::render('Goal/Edit', [
+            'goal' => $goal
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Goal $goal)
+    public function update(Request $request, Goal $goal): RedirectResponse
     {
-        //
+        $this->authorize('update', $goal);
+        
+        $validated = $request->validate([
+            'goal' => 'required|string|max:60',
+            'current' => 'required|numeric|min:0.01|lte:target',
+            'target' => 'required|numeric|min:0.01',
+        ]);
+
+        $goal->update($validated);
+
+        return redirect(route('goals.index'));
     }
 
     /**
@@ -81,6 +99,10 @@ class GoalController extends Controller
      */
     public function destroy(Goal $goal)
     {
-        //
+        $this->authorize('delete', $goal);
+
+        $goal->delete();
+        
+        return redirect(route('goals.index'));
     }
 }

@@ -1,8 +1,14 @@
 import React from "react";
+import ResourceLink from "./ResourceLink";
 
 const Goal = ({ goal }) => {
     return (
-        <div className=" bg-white shadow-sm rounded-3xl w-full">
+        <ResourceLink 
+            routeName="goals.show"
+            routeParams={{id: goal.id}}
+            className=" bg-white shadow-sm rounded-3xl w-full"
+            routeMethod="get"
+        >
             <div className="p-6">
                 <div className="flex justify-between my-1">
                     <span className="text-base font-medium text-blue-700 dark:text-black">
@@ -22,7 +28,7 @@ const Goal = ({ goal }) => {
                 </div>
 
             </div>
-        </div>
+        </ResourceLink>
     );
 };
 
